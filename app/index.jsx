@@ -1,4 +1,6 @@
 import { View, Text, StyleSheet, FlatList, Image, Dimensions } from 'react-native'
+import { StatusBar } from 'expo-status-bar'
+import * as Progress from 'react-native-progress'
 import React from 'react'
 
 const { height, width } = Dimensions.get('window');
@@ -44,10 +46,28 @@ const taskScreen = () => {
 
   const taskCard = ({item}) => (
     <View>
-    <Text style = {styles.text1}>{item.name}</Text>
+    <Text style = {styles.text1}>{item.progress1} out of {item.progress2} done</Text>
     <View style = {[styles.task, {backgroundColor: item.typecolor}, {flexDirection: 'column'}]}>
       <Text style = {styles.text2}>{item.name}</Text>
-      <Text style = {styles.text2}>{item.progress1} out of {item.progress2}</Text>
+      
+      <View style={styles.progressWrapper}>
+      
+        <Progress.Bar 
+          progress={item.progress1/item.progress2} 
+          width={width*0.7} 
+          height={height*0.025} 
+          borderRadius={30}
+          color='#B2C1D7'
+          borderColor='#556987'
+          borderWidth={2}
+        />
+        <Text style={[styles.progressText, { left: `${item.progress1/item.progress2 * 100 - 8}%` }]}>
+          {Math.round(item.progress1/item.progress2*100)}%
+        </Text>
+        
+      </View>
+
+      <Text style = {styles.text3}>{item.progress2 - item.progress1} remaining for today</Text>
     </View>
     </View>
   )
@@ -72,15 +92,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCE5F2',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 15,
+    paddingBottom: 25,
   },
   task: {
-    width: width*0.9,
-    height: height*0.15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: width*0.05,
+    width: width*0.8,
+    height: height*0.2,
+    //alignItems: 'center',
+    //justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: 15,
-    marginTop: width*0.01,
+    marginTop: width*0.015,
     elevation: 5,
     shadowRadius: 5,
     shadowOffset: {
@@ -89,15 +112,33 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.5,
     shadowColor: '#74839B',
-    marginBottom: width*0.025,
+    marginBottom: width*0.015,
   },
   text1: {
-    fontSize: 20,
+    fontSize: 17,
     marginTop: width*0.025,
+    fontWeight: 500,
   },
   text2: {
     fontSize: 20,
-  }
+    fontWeight: 600,
+  },
+  text3: {
+    fontSize: 20,
+  },
+  progressWrapper: {
+    position: 'relative',
+    width: width*0.7,
+  },
+  progressText: {
+    position: 'absolute',
+    top: 0, 
+    left: '50%', 
+    transform: [{ translateX: -15 }],
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: 'black',
+  },
 })
 
 export default taskScreen
