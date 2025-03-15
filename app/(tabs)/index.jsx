@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, FlatList, Image, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, Pressable, Button, TouchableOpacity } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import * as Progress from 'react-native-progress'
+import { Link } from 'expo-router'
 import React from 'react'
 
 const { height, width } = Dimensions.get('window');
@@ -10,7 +11,7 @@ const taskScreen = () => {
     {
       typecolor: '#EFF3F8',
       name: 'Homework Problems',
-      progress1: 3,
+      progress1: 1,
       progress2: 7,
       esimate: 8,
     },
@@ -79,7 +80,17 @@ const taskScreen = () => {
         data={tasks}
         renderItem={taskCard}
         keyExtractor={(item, index) => index.toString()}
+        ListFooterComponent={<View style={styles.footerSpace} />}
       />
+
+      <View style ={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Add</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
 
     </View>
   )
@@ -93,7 +104,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 15,
-    paddingBottom: 25,
   },
   task: {
     padding: width*0.05,
@@ -139,6 +149,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
   },
+  buttonsContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+    bottom: 0,
+    justifyContent: 'space-evenly',
+  },
+  button: {
+    backgroundColor: '#FFFFFF',
+    margin: width*0.05,
+    borderRadius: 20,
+    borderColor: 'black',
+    borderWidth: 1.5,
+
+    shadowRadius: 5,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    shadowOpacity: 1,
+    shadowColor: '#74839B',
+
+  },
+  buttonText: {
+    fontSize: 30,
+    margin: width*0.03,
+    fontWeight: 500,
+    marginHorizontal: width*0.08,
+  },
+  footerSpace: {
+    height: height*0.12,
+  }
 })
 
 export default taskScreen
