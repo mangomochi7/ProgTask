@@ -1,101 +1,118 @@
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, Pressable, Button, TouchableOpacity } from 'react-native'
-import { StatusBar } from 'expo-status-bar'
-import * as Progress from 'react-native-progress'
-import { Link } from 'expo-router'
-import React from 'react'
+import { View, Text, StyleSheet, FlatList, Dimensions, Pressable } from 'react-native';
+import { useNavigation } from 'expo-router';
+import * as Progress from 'react-native-progress';
+import React from 'react';
+import { useTasks } from '../../context/TaskContext';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 const { height, width } = Dimensions.get('window');
 
-const taskScreen = () => {
-  const tasks = [
-    {
-      typecolor: '#EFF3F8',
-      name: 'Homework Problems',
-      progress1: 1,
-      progress2: 7,
-      esimate: 8,
-    },
-    {
-      typecolor: '#FFFFF4',
-      name: 'Khan Academy',
-      progress1: 2,
-      progress2: 3,
-      esimate: 14,
-    },
-    {
-      typecolor: '#FFFFF4',
-      name: 'Problem Set',
-      progress1: 15,
-      progress2: 40,
-      esimate: 2,
-    },
-    {
-      typecolor: '#F8F0EF',
-      name: 'Chemistry Textbook',
-      progress1: 410,
-      progress2: 450,
-      esimate: 5,
-    },
-    {
-      typecolor: '#EFF3F8',
-      name: 'Memorize Vocabulary',
-      progress1: 12,
-      progress2: 20,
-      esimate: 3,
-    }
-  ]
+const TaskScreen = () => {
+  const navigation = useNavigation();
+  const { tasks } = useTasks();
 
-  const taskCard = ({item}) => (
-    <View>
-    <Text style = {styles.text1}>{item.progress1} out of {item.progress2} done</Text>
-    <View style = {[styles.task, {backgroundColor: item.typecolor}, {flexDirection: 'column'}]}>
-      <Text style = {styles.text2}>{item.name}</Text>
-      
-      <View style={styles.progressWrapper}>
-      
-        <Progress.Bar 
-          progress={item.progress1/item.progress2} 
-          width={width*0.7} 
-          height={height*0.025} 
-          borderRadius={30}
-          color='#B2C1D7'
-          borderColor='#556987'
-          borderWidth={2}
-        />
-        <Text style={[styles.progressText, { left: `${item.progress1/item.progress2 * 100 - 8}%` }]}>
-          {Math.round(item.progress1/item.progress2*100)}%
+  const taskCard = ({ item, index }) => (
+    <View style={styles.cardContainer}>
+
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardHeaderFont}>
+          {item.totalProgress}/{item.totalAmount} done
         </Text>
-        
+
+        <Text style={styles.cardHeaderFont}>
+          est. {Math.ceil((item.totalAmount - item.totalProgress) / (item.dailyTarget))} days left
+        </Text>
       </View>
 
-      <Text style = {styles.text3}>{item.progress2 - item.progress1} remaining for today</Text>
+      <View style={styles.taskCard}>
+        <View style={styles.nameRow}>
+          <Text style={styles.nameFont}>{item.name}</Text>
+
+          <Pressable onPress={() => {}}>
+            <Text style={styles.deleteButton}>X</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.progressContainer}>
+          <Progress.Bar
+            progress={item.totalProgress / item.totalAmount}
+            width={width * 0.7}
+            height={height * 0.025}
+            borderRadius={30}
+            color="#B2C1D7"
+            borderColor="#556987"
+            borderWidth={2}
+          />
+
+          <Text
+            style={[
+              styles.progressFont,
+              {left: `${Math.min(80, Math.max(3, (item.totalProgress / item.totalAmount) * 100 - 15))}%`},
+            ]}
+          >
+            {Math.round(Math.min(100, (item.totalProgress / item.totalAmount) * 100))}%
+          </Text>
+        </View>
+
+        <View style={styles.dottedLine} />
+
+        <Text style={styles.dailyFont}>
+          {item.dailyTarget - item.dailyProgress} {item.unit} remaining today
+        </Text>
+
+        <View style={styles.dailyProgressRow}>
+          <View style={styles.progressContainer}>
+            <Progress.Bar
+              progress={item.dailyProgress / item.dailyTarget}
+              width={width * 0.6}
+              height={height * 0.025}
+              borderRadius={30}
+              color="#DDE8F7"
+              borderColor="#556987"
+              borderWidth={2}
+            />
+
+            <Text
+              style={[
+                styles.progressFont,
+                {left: `${Math.min(80, Math.max(3, (item.dailyProgress / item.dailyTarget) * 100 - 15))}%`},
+              ]}
+            >
+              {Math.round(Math.min(100, (item.dailyProgress / item.dailyTarget) * 100))}%
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={() => navigation.navigate('(progress)/updatetask', { index })}
+          >
+            <MaterialCommunityIcons name="plus-thick" size={height * 0.035} color="#556987" />
+          </Pressable>
+        </View>
+      </View>
     </View>
-    </View>
-  )
+  );
 
   return (
-    <View style = {styles.container}>
-
+    <View style={styles.container}>
       <FlatList
         data={tasks}
         renderItem={taskCard}
         keyExtractor={(item, index) => index.toString()}
         ListFooterComponent={<View style={styles.footerSpace} />}
+        showsVerticalScrollIndicator={false}
       />
 
-      <View style ={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Add</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
+      <View style={styles.addButtonContainer}>
+        <Pressable
+          style={styles.addButton}
+          onPress={() => navigation.navigate('(progress)/addtask')}
+        >
+          <MaterialCommunityIcons name="plus-thick" size={width*0.12} color="#FFFFFF" />
+        </Pressable>
       </View>
-
     </View>
-  )
-
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -103,83 +120,94 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCE5F2',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 15,
+    paddingTop: height*0.04,
   },
-  task: {
-    padding: width*0.05,
-    width: width*0.8,
-    height: height*0.2,
-    //alignItems: 'center',
-    //justifyContent: 'center',
+  cardContainer: {
+    paddingHorizontal: width * 0.05,
+    marginBottom: width * 0.05,
+  },
+  cardHeader: {
     flexDirection: 'row',
-    borderRadius: 15,
-    marginTop: width*0.015,
+    justifyContent: 'space-between',
+    width: width * 0.8,
+    alignSelf: 'center',
+  },
+  cardHeaderFont: {
+    fontSize: height * 0.019,
+    fontWeight: '500',
+  },
+  taskCard: {
+    padding: width * 0.05,
+    width: width * 0.8,
+    borderRadius: width * 0.03,
+    backgroundColor: '#EFF3F8',
     elevation: 5,
     shadowRadius: 5,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.7,
     shadowColor: '#74839B',
-    marginBottom: width*0.015,
   },
-  text1: {
-    fontSize: 17,
-    marginTop: width*0.025,
-    fontWeight: 500,
+  nameRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  text2: {
-    fontSize: 20,
-    fontWeight: 600,
+  deleteButton: {
+    fontSize: height * 0.025,
+    fontWeight: '900',
+    color: '#7C5A5A',
   },
-  text3: {
-    fontSize: 20,
+  nameFont: {
+    fontSize: height * 0.022,
+    fontWeight: '600',
   },
-  progressWrapper: {
+  progressContainer: {
     position: 'relative',
-    width: width*0.7,
+    marginTop: height * 0.015,
   },
-  progressText: {
+  progressFont: {
     position: 'absolute',
-    top: 0, 
-    left: '50%', 
-    transform: [{ translateX: -15 }],
+    top: 0,
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: height * 0.018,
     color: 'black',
   },
-  buttonsContainer: {
+  dottedLine: {
+    borderBottomColor: '#ACB6C5',
+    borderBottomWidth: 5,
+    borderStyle: 'dotted',
+    marginTop: height * 0.025,
+    marginBottom: height * 0.01,
+  },
+  dailyFont: {
+    fontSize: height * 0.02,
+    marginTop: height * 0.01,
+  },
+  dailyProgressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: height * 0.01,
+  },
+  addButtonContainer: {
     position: 'absolute',
     flexDirection: 'row',
-    bottom: 0,
+    bottom: width * 0.03,
+    right: width * 0.03,
     justifyContent: 'space-evenly',
   },
-  button: {
-    backgroundColor: '#FFFFFF',
-    margin: width*0.05,
-    borderRadius: 20,
-    borderColor: 'black',
-    borderWidth: 1.5,
-
-    shadowRadius: 5,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    shadowOpacity: 1,
-    shadowColor: '#74839B',
-
-  },
-  buttonText: {
-    fontSize: 30,
-    margin: width*0.03,
-    fontWeight: 500,
-    marginHorizontal: width*0.08,
+  addButton: {
+    backgroundColor: '#556987',
+    borderRadius: height * 0.08,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: width * 0.15,
+    width: width * 0.15,
+    elevation: 4,
   },
   footerSpace: {
-    height: height*0.12,
-  }
-})
+    height: height * 0.12,
+  },
+});
 
-export default taskScreen
+export default TaskScreen;
