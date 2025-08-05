@@ -1,63 +1,54 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from 'expo-router';
-import { useTasks } from '../../context/TaskContext';
+import { useStreaks } from '../../context/StreakContext';
 
 const { height, width } = Dimensions.get('window');
 
-const AddTaskScreen = () => {
+const AddStreakTask = () => {
   const navigation = useNavigation();
-  const { addTask } = useTasks();
+  const { addStreak } = useStreaks();
   const [taskName, setTaskName] = useState('');
   const [dailyTarget, setDailyTarget] = useState('');
-  const [totalAmount, setTotalAmount] = useState('');
   const [unit, setUnit] = useState('');
 
   const handleCreate = () => {
-    if (!taskName || !dailyTarget|| !totalAmount || dailyTarget <= 0 || totalAmount <= 0) return;
-
-    addTask({
-      name: taskName,
-      dailyTarget: parseInt(dailyTarget),
-      totalAmount: parseInt(totalAmount),
-      unit: unit || '',
-      totalProgress: 0,
-      dailyProgress: 0,
-      lastUpdated: new Date().toISOString(),
+    if (!taskName || !dailyTarget || dailyTarget <= 0) return;
+    addStreak({
+        name: taskName,
+        dailyTarget: parseInt(dailyTarget),
+        unit: unit || '',
+        dailyProgress: 0,
+        streak: 0,
+        totalCompleted: 0,
+        lastUpdated: new Date().toISOString(),
     });
-
     navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerArea}>
         
+      <View style={styles.containerArea}>
         <Text style={styles.labelFont}>Task Name:</Text>
-        <TextInput style={styles.input} value={taskName} onChangeText={setTaskName} placeholder="e.g. read textbook" />
+        <TextInput style={styles.input} value={taskName} onChangeText={setTaskName} placeholder="e.g. read"/>
 
         <Text style={styles.labelFont}>Daily Target:</Text>
-        <TextInput style={styles.input} value={dailyTarget} onChangeText={setDailyTarget} keyboardType="numeric" placeholder="e.g. 5" />
-
-        <Text style={styles.labelFont}>Total Amount:</Text>
-        <TextInput style={styles.input} value={totalAmount} onChangeText={setTotalAmount} keyboardType="numeric" placeholder="e.g. 100" />
+        <TextInput style={styles.input} value={dailyTarget} onChangeText={setDailyTarget} keyboardType="numeric" placeholder="e.g. 30"/>
 
         <Text style={styles.labelFont}>Unit of Amount:</Text>
-        <TextInput style={styles.input} value={unit} onChangeText={setUnit} placeholder="e.g. pages" />
+        <TextInput style={styles.input} value={unit} onChangeText={setUnit} placeholder="e.g. minutes"/>
 
         <View style={styles.buttonRow}>
-
           <Pressable style={styles.createButton} onPress={handleCreate}>
             <Text style={styles.buttonText}>Create</Text>
           </Pressable>
-
           <Pressable style={styles.discardButton} onPress={() => navigation.goBack()}>
             <Text style={styles.buttonText}>Discard</Text>
           </Pressable>
-        
         </View>
-        
       </View>
+
     </View>
   );
 };
@@ -129,4 +120,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddTaskScreen;
+export default AddStreakTask;

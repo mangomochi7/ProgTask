@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Dimensions, Pressable } from 'react-native';
+import { Alert, View, Text, StyleSheet, FlatList, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from 'expo-router';
 import * as Progress from 'react-native-progress';
 import React from 'react';
@@ -9,91 +9,127 @@ const { height, width } = Dimensions.get('window');
 
 const TaskScreen = () => {
   const navigation = useNavigation();
-  const { tasks } = useTasks();
+  const { tasks, removeTask } = useTasks();
 
-  const taskCard = ({ item, index }) => (
-    <View style={styles.cardContainer}>
+  const taskCard = ({ item, index }) => {
+    const dailyRatio = item.dailyProgress / item.dailyTarget;
+    const totalDone = item.totalProgress >= item.totalAmount;
+    
+    let backgroundColor = '#EFF3F8';
+    if (totalDone) {
+      backgroundColor = '#F1F8EF';
+    } else if (item.dailyProgress === 0) {
+      backgroundColor = '#F8F0EF';
+    } else if (dailyRatio < 1) {
+      backgroundColor = '#FFFFF4';
+    }
 
-      <View style={styles.cardHeader}>
-        <Text style={styles.cardHeaderFont}>
-          {item.totalProgress}/{item.totalAmount} done
-        </Text>
+    return (
+      <View style={styles.cardContainer}>
 
-        <Text style={styles.cardHeaderFont}>
-          est. {Math.ceil((item.totalAmount - item.totalProgress) / (item.dailyTarget))} days left
-        </Text>
-      </View>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardHeaderFont}>
+            {item.totalProgress}/{item.totalAmount} done
+          </Text>
 
-      <View style={styles.taskCard}>
-        <View style={styles.nameRow}>
-          <Text style={styles.nameFont}>{item.name}</Text>
-
-          <Pressable onPress={() => {}}>
-            <Text style={styles.deleteButton}>X</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.progressContainer}>
-          <Progress.Bar
-            progress={item.totalProgress / item.totalAmount}
-            width={width * 0.7}
-            height={height * 0.025}
-            borderRadius={30}
-            color="#B2C1D7"
-            borderColor="#556987"
-            borderWidth={2}
-          />
-
-          <Text
-            style={[
-              styles.progressFont,
-              {left: `${Math.min(80, Math.max(3, (item.totalProgress / item.totalAmount) * 100 - 15))}%`},
-            ]}
-          >
-            {Math.round(Math.min(100, (item.totalProgress / item.totalAmount) * 100))}%
+          <Text style={styles.cardHeaderFont}>
+            est. {Math.ceil((item.totalAmount - item.totalProgress) / (item.dailyTarget))} days left
           </Text>
         </View>
 
-        <View style={styles.dottedLine} />
+        <View style={[styles.taskCard, { backgroundColor }]}>
+          <View style={styles.nameRow}>
 
-        <Text style={styles.dailyFont}>
-          {item.dailyTarget - item.dailyProgress} {item.unit} remaining today
-        </Text>
+            <Text style={styles.nameFont}>{item.name}</Text>
 
-        <View style={styles.dailyProgressRow}>
+            <Pressable onPress={() => {
+              Alert.alert(
+                "Delete Task",
+                `Are you sure you want to delete "${item.name}"?`,
+                [
+                  { text: "Cancel", style: "cancel" },
+                  { text: "Yes", style: "destructive", onPress: () => removeTask(index) }
+                ]
+              );
+            }}>
+              <Text style={styles.deleteButton}>X</Text>
+            </Pressable>
+
+          </View>
+
           <View style={styles.progressContainer}>
             <Progress.Bar
-              progress={item.dailyProgress / item.dailyTarget}
-              width={width * 0.6}
+              progress={item.totalProgress / item.totalAmount}
+              width={width * 0.7}
               height={height * 0.025}
               borderRadius={30}
-              color="#DDE8F7"
+              color="#B2C1D7"
               borderColor="#556987"
               borderWidth={2}
             />
-
             <Text
               style={[
                 styles.progressFont,
-                {left: `${Math.min(80, Math.max(3, (item.dailyProgress / item.dailyTarget) * 100 - 15))}%`},
+                {
+                  left: `${Math.min(80, Math.max(3, (item.totalProgress / item.totalAmount) * 100 - 15))}%`,
+                },
               ]}
             >
-              {Math.round(Math.min(100, (item.dailyProgress / item.dailyTarget) * 100))}%
+              {Math.round(Math.min(100, (item.totalProgress / item.totalAmount) * 100))}%
             </Text>
           </View>
 
-          <Pressable
-            onPress={() => navigation.navigate('(progress)/updatetask', { index })}
-          >
-            <MaterialCommunityIcons name="plus-thick" size={height * 0.035} color="#556987" />
-          </Pressable>
+          <View style={styles.dottedLine} />
+
+          <Text style={styles.dailyFont}>
+            {item.dailyTarget - item.dailyProgress} {item.unit} remaining today
+          </Text>
+
+          <View style={styles.dailyProgressRow}>
+            <View style={styles.progressContainer}>
+              <Progress.Bar
+                progress={item.dailyProgress / item.dailyTarget}
+                width={width * 0.6}
+                height={height * 0.025}
+                borderRadius={30}
+                color="#DDE8F7"
+                borderColor="#556987"
+                borderWidth={2}
+              />
+              <Text
+                style={[
+                  styles.progressFont,
+                  {
+                    left: `${Math.min(80, Math.max(3, (item.dailyProgress / item.dailyTarget) * 100 - 15))}%`,
+                  },
+                ]}
+              >
+                {Math.round(Math.min(100, (item.dailyProgress / item.dailyTarget) * 100))}%
+              </Text>
+            </View>
+
+            <Pressable
+              disabled={totalDone}
+              onPress={() => navigation.navigate('(progress)/updateTask', { index })}
+              style={({ pressed }) => ({
+                opacity: totalDone || pressed ? 0.5 : 1,
+              })}
+            >
+              <MaterialCommunityIcons name="plus-thick" size={height * 0.035} color="#556987" />
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
+
+      <View style={styles.topBar}>
+        <Text style={styles.topBarText}>Goal Progress</Text>
+      </View>
+
       <FlatList
         data={tasks}
         renderItem={taskCard}
@@ -105,7 +141,7 @@ const TaskScreen = () => {
       <View style={styles.addButtonContainer}>
         <Pressable
           style={styles.addButton}
-          onPress={() => navigation.navigate('(progress)/addtask')}
+          onPress={() => navigation.navigate('(progress)/addTask')}
         >
           <MaterialCommunityIcons name="plus-thick" size={width*0.12} color="#FFFFFF" />
         </Pressable>
@@ -120,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCE5F2',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: height*0.04,
+    paddingTop: height*0.03,
   },
   cardContainer: {
     paddingHorizontal: width * 0.05,
@@ -207,6 +243,24 @@ const styles = StyleSheet.create({
   },
   footerSpace: {
     height: height * 0.12,
+  },
+  topBar: {
+    width: '100%',
+    height: '8%',
+    backgroundColor: '#BBC6D8',
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: height*0.01,
+    borderTopWidth: 1.5,
+    borderBottomWidth: 1.5,
+    borderColor: '#74839B',
+    elevation: 2,
+  },
+  topBarText: {
+    color: '#000000',
+    fontSize: height * 0.025,
+    fontWeight: 500,
   },
 });
 

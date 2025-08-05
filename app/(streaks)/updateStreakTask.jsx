@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useTasks } from '../../context/TaskContext';
+import { useNavigation, useLocalSearchParams } from 'expo-router';
+import { useStreaks } from '../../context/StreakContext';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
-const UpdateTaskScreen = () => {
+const UpdateStreakTask = () => {
   const navigation = useNavigation();
   const { index } = useLocalSearchParams();
-  const { tasks, updateTaskProgress } = useTasks();
+  const { streaks, updateStreakProgress } = useStreaks();
   const [unitsCompleted, setUnitsCompleted] = useState('');
 
-  const task = tasks[parseInt(index)];
+  const task = streaks[parseInt(index)];
 
   const handleUpdate = () => {
     const value = parseInt(unitsCompleted);
     if (isNaN(value) || value < 0) return;
 
-    updateTaskProgress(parseInt(index), value);
+    updateStreakProgress(parseInt(index), value);
     navigation.goBack();
   };
 
@@ -37,7 +37,6 @@ const UpdateTaskScreen = () => {
           <Pressable style={styles.updateButton} onPress={handleUpdate}>
             <Text style={styles.buttonText}>Update</Text>
           </Pressable>
-
           <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
             <Text style={styles.buttonText}>Back</Text>
           </Pressable>
@@ -109,4 +108,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UpdateTaskScreen;
+export default UpdateStreakTask;
