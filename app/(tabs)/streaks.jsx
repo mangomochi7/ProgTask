@@ -4,6 +4,7 @@ import * as Progress from 'react-native-progress';
 import React from 'react';
 import { useStreaks } from '../../context/StreakContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import pluralize from 'pluralize';
 
 const { height, width } = Dimensions.get('window');
 
@@ -16,6 +17,10 @@ const StreaksScreen = () => {
     const dailyRatio = cappedDailyProgress / item.dailyTarget;
     const remainingToday = Math.max(0, item.dailyTarget - item.dailyProgress);
 
+    const words = item.unit.split(' ');
+    words[words.length - 1] = pluralize(words[words.length - 1]);
+    currUnit = words.join(' ');
+    
     let backgroundColor;
     if (dailyRatio === 1) {
       backgroundColor = '#EFF3F8';
@@ -29,7 +34,7 @@ const StreaksScreen = () => {
       <View style={styles.cardContainer}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardHeaderFont}>
-            {item.totalCompleted} {item.unit} completed
+            {item.totalCompleted} {currUnit} completed
           </Text>
         </View>
 

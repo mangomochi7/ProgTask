@@ -4,6 +4,7 @@ import * as Progress from 'react-native-progress';
 import React from 'react';
 import { useTasks } from '../../context/TaskContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import pluralize from 'pluralize';
 
 const { height, width } = Dimensions.get('window');
 
@@ -14,6 +15,10 @@ const TaskScreen = () => {
   const taskCard = ({ item, index }) => {
     const dailyRatio = item.dailyProgress / item.dailyTarget;
     const totalDone = item.totalProgress >= item.totalAmount;
+
+    const words = item.unit.split(' ');
+    words[words.length - 1] = pluralize(words[words.length - 1]);
+    currUnit = words.join(' ');
 
     let backgroundColor = '#EFF3F8';
     if (totalDone) {
@@ -82,7 +87,7 @@ const TaskScreen = () => {
           <View style={styles.dottedLine} />
 
           <Text style={styles.dailyFont}>
-            {item.dailyTarget - item.dailyProgress} {item.unit} remaining today
+            {item.dailyTarget - item.dailyProgress} {currUnit} remaining today
           </Text>
 
           <View style={styles.dailyProgressRow}>
