@@ -14,7 +14,7 @@ const TaskScreen = () => {
   const taskCard = ({ item, index }) => {
     const dailyRatio = item.dailyProgress / item.dailyTarget;
     const totalDone = item.totalProgress >= item.totalAmount;
-    
+
     let backgroundColor = '#EFF3F8';
     if (totalDone) {
       backgroundColor = '#F1F8EF';
@@ -135,6 +135,11 @@ const TaskScreen = () => {
         renderItem={taskCard}
         keyExtractor={(item, index) => index.toString()}
         ListFooterComponent={<View style={styles.footerSpace} />}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}> You haven't added any tasks yet. Tap the + button to add one! </Text>
+          </View>
+        }
         showsVerticalScrollIndicator={false}
       />
 
@@ -148,6 +153,7 @@ const TaskScreen = () => {
       </View>
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -246,9 +252,8 @@ const styles = StyleSheet.create({
   },
   topBar: {
     width: '100%',
-    height: '8%',
+    height: height*0.08,
     backgroundColor: '#BBC6D8',
-    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: height*0.01,
@@ -261,6 +266,15 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: height * 0.025,
     fontWeight: 500,
+  },
+  emptyContainer: {
+    padding: width*0.04,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: width*0.045,
   },
 });
 

@@ -106,6 +106,11 @@ const StreaksScreen = () => {
         renderItem={streakCard}
         keyExtractor={(item, index) => index.toString()}
         ListFooterComponent={<View style={styles.footerSpace} />}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}> You haven't added any tasks yet. Tap the + button to add one! </Text>
+          </View>
+        }
         showsVerticalScrollIndicator={false}
       />
 
@@ -217,9 +222,8 @@ const styles = StyleSheet.create({
   },
   topBar: {
     width: '100%',
-    height: '8%',
+    height: height*0.08,
     backgroundColor: '#BBC6D8',
-    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: height*0.01,
@@ -249,6 +253,15 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
     fontSize: height * 0.018,
+  },
+  emptyContainer: {
+    padding: width*0.04,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: width*0.045,
   },
 });
 

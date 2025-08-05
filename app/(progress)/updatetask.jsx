@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
+import { Alert, View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useTasks } from '../../context/TaskContext';
 
@@ -15,7 +15,15 @@ const UpdateTaskScreen = () => {
 
   const handleUpdate = () => {
     const value = parseInt(unitsCompleted);
-    if (isNaN(value) || value < 0) return;
+
+    if (isNaN(value)) {
+      Alert.alert("Invalid Input", "Please enter a valid number.");
+      return;
+    }
+    if (value < 0) {
+      Alert.alert("Invalid Value", "Please enter a number greater than 0.");
+      return;
+    }
 
     updateTaskProgress(parseInt(index), value);
     navigation.goBack();
@@ -23,6 +31,11 @@ const UpdateTaskScreen = () => {
 
   return (
     <View style={styles.container}>
+      
+      <View style={styles.topBar}>
+        <Text style={styles.topBarText}>Update Your Progress</Text>
+      </View>
+      
       <View style={styles.containerArea}>
         <Text style={styles.label}>{task.unit} completed:</Text>
         <TextInput
@@ -106,6 +119,23 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: height * 0.02,
     fontWeight: '500',
+  },
+  topBar: {
+    width: '100%',
+    height: height*0.08,
+    backgroundColor: '#BBC6D8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: height*0.02,
+    borderTopWidth: 1.5,
+    borderBottomWidth: 1.5,
+    borderColor: '#74839B',
+    elevation: 2,
+  },
+  topBarText: {
+    color: '#000000',
+    fontSize: height * 0.025,
+    fontWeight: 500,
   },
 });
 

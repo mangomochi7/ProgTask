@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
+import { Alert, View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { useTasks } from '../../context/TaskContext';
 
@@ -14,13 +14,41 @@ const AddTaskScreen = () => {
   const [unit, setUnit] = useState('');
 
   const handleCreate = () => {
-    if (!taskName || !dailyTarget|| !totalAmount || dailyTarget <= 0 || totalAmount <= 0) return;
+
+    if (!taskName) {
+      Alert.alert("Missing Task Name", "Please enter a task name.");
+      return;
+    }
+    if (!unit || unit.trim() === '') {
+      Alert.alert("Missing Unit", "Please enter a unit.");
+      return;
+    }
+    if (!dailyTarget) {
+      Alert.alert("Missing Daily Target", "Please enter a daily target.");
+      return;
+    }
+    if (parseInt(dailyTarget) <= 0) {
+      Alert.alert("Invalid Daily Target", "Daily target must be greater than 0.");
+      return;
+    }
+    if (!totalAmount) {
+      Alert.alert("Missing Total Amount", "Please enter a total amount.");
+      return;
+    }
+    if (parseInt(totalAmount) <= 0) {
+      Alert.alert("Invalid Total Amount", "Total amount must be greater than 0.");
+      return;
+    }
+    if (parseInt(totalAmount) < parseInt(dailyTarget)) {
+      Alert.alert("Invalid Amounts", "Total amount must be greater than the daily target.");
+      return;
+    }
 
     addTask({
       name: taskName,
       dailyTarget: parseInt(dailyTarget),
       totalAmount: parseInt(totalAmount),
-      unit: unit || '',
+      unit: unit.toLowerCase(),
       totalProgress: 0,
       dailyProgress: 0,
       lastUpdated: new Date().toISOString(),
@@ -31,6 +59,11 @@ const AddTaskScreen = () => {
 
   return (
     <View style={styles.container}>
+      
+      <View style={styles.topBar}>
+        <Text style={styles.topBarText}>Create a Goal</Text>
+      </View>
+      
       <View style={styles.containerArea}>
         
         <Text style={styles.labelFont}>Task Name:</Text>
@@ -56,7 +89,7 @@ const AddTaskScreen = () => {
           </Pressable>
         
         </View>
-        
+
       </View>
     </View>
   );
@@ -126,6 +159,23 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: height * 0.02,
     fontWeight: '500',
+  },
+  topBar: {
+    width: '100%',
+    height: height*0.08,
+    backgroundColor: '#BBC6D8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: height*0.02,
+    borderTopWidth: 1.5,
+    borderBottomWidth: 1.5,
+    borderColor: '#74839B',
+    elevation: 2,
+  },
+  topBarText: {
+    color: '#000000',
+    fontSize: height * 0.025,
+    fontWeight: 500,
   },
 });
 
