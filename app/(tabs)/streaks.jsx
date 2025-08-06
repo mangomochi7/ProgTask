@@ -113,7 +113,7 @@ const StreaksScreen = () => {
         ListFooterComponent={<View style={styles.footerSpace} />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}> You haven't added any tasks yet. Tap the + button to add one! </Text>
+            <Text style={styles.emptyText}>You haven't started any streaks yet. Tap the + button to start one!</Text>
           </View>
         }
         showsVerticalScrollIndicator={false}

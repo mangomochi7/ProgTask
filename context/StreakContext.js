@@ -15,7 +15,7 @@ export const StreakProvider = ({ children }) => {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
-          const updated = resetStreaks(parsed);
+          const updated = midnightReset(parsed);
           setStreaks(updated);
         }
       } catch (err) {
@@ -30,7 +30,7 @@ export const StreakProvider = ({ children }) => {
     const sub = AppState.addEventListener('change', nextAppState => {
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
         setStreaks(prev => {
-          const updated = resetStreaks(prev);
+          const updated = midnightReset(prev);
           saveStreaks(updated);
           return updated;
         });
@@ -64,34 +64,54 @@ export const StreakProvider = ({ children }) => {
   const updateStreakProgress = (index, value) => {
     const updated = [...streaks];
     const now = new Date();
-    const last = new Date(updated[index].lastUpdated);
+    const todayStr = now.toDateString();
 
-    if (now.toDateString() !== last.toDateString()) {
-      if (last.toDateString() === new Date(now.getTime() - 86400000).toDateString()) {
-        updated[index].streak += 1;
-      } else {
-        updated[index].streak = 1;
-      }
-      updated[index].dailyProgress = value;
-    } else {
-      updated[index].dailyProgress += value;
-      updated[index].totalCompleted += value; 
+    let item = updated[index];
+    const lastUpdatedDate = new Date(item.lastUpdated).toDateString();
+
+    if (lastUpdatedDate !== todayStr) {
+      item.dailyProgress = 0;
     }
 
-    updated[index].lastUpdated = now.toISOString();
+    const prevProgress = item.dailyProgress;
+    item.dailyProgress += value;
+    item.totalCompleted += value;
+
+    if (prevProgress < item.dailyTarget && item.dailyProgress >= item.dailyTarget) {
+      item.streak += 1;
+    }
+
+    item.lastUpdated = now.toISOString();
 
     setStreaks(updated);
     saveStreaks(updated);
   };
 
-  const resetStreaks = (list) => {
-    const today = new Date().toDateString();
+  const midnightReset = (list) => {
+    const today = new Date();
+    const todayStr = today.toDateString();
+    const yesterday = new Date(today.getTime() - 86400000);
+    const yesterdayStr = yesterday.toDateString();
+
     return list.map(item => {
-      const last = new Date(item.lastUpdated).toDateString();
-      if (last !== today) {
+      const lastUpdatedDate = new Date(item.lastUpdated);
+      const lastUpdatedStr = lastUpdatedDate.toDateString();
+
+      if (lastUpdatedStr !== todayStr) {
+        let newStreak = item.streak;
+
+        if (lastUpdatedStr === yesterdayStr) {
+          if (item.dailyProgress < item.dailyTarget) {
+            newStreak = 0;
+          }
+        } else {
+          newStreak = 0;
+        }
+
         return {
           ...item,
           dailyProgress: 0,
+          streak: newStreak,
         };
       }
       return item;
@@ -99,7 +119,7 @@ export const StreakProvider = ({ children }) => {
   };
 
   return (
-    <StreakContext.Provider value={{ streaks, addStreak, removeStreak, updateStreakProgress }}>
+    <StreakContext.Provider value={{ streaks, addStreak, removeStreak, updateStreakProgress, midnightReset }}>
       {children}
     </StreakContext.Provider>
   );
