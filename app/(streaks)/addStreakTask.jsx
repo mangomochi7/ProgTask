@@ -12,6 +12,12 @@ const AddStreakTask = () => {
   const [dailyTarget, setDailyTarget] = useState('');
   const [unit, setUnit] = useState('');
 
+  const handleDailyTargetChange = (text) => {
+    if (/^\d*$/.test(text)) {
+      setDailyTarget(text);
+    }
+  };
+
   const handleCreate = () => {
 
     if (!taskName || taskName.trim() === '') {
@@ -54,7 +60,7 @@ const AddStreakTask = () => {
             <TextInput style={styles.input} value={taskName} onChangeText={setTaskName} placeholder="e.g. read"/>
 
             <Text style={styles.labelFont}>Daily Target:</Text>
-            <TextInput style={styles.input} value={dailyTarget} onChangeText={setDailyTarget} keyboardType="numeric" placeholder="e.g. 30"/>
+            <TextInput style={styles.input} value={dailyTarget} onChangeText={handleDailyTargetChange} keyboardType="numeric" placeholder="e.g. 30"/>
 
             <Text style={styles.labelFont}>Unit of Amount:</Text>
             <TextInput style={styles.input} value={unit} onChangeText={setUnit} placeholder="e.g. minutes"/>

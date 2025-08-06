@@ -13,6 +13,17 @@ const AddTaskScreen = () => {
   const [totalAmount, setTotalAmount] = useState('');
   const [unit, setUnit] = useState('');
 
+  const handleDailyTargetChange = (text) => {
+    if (/^\d*$/.test(text)) {
+      setDailyTarget(text);
+    }
+  };
+  const handleTotalAmountChange = (text) => {
+    if (/^\d*$/.test(text)) {
+      setTotalAmount(text);
+    }
+  };
+
   const handleCreate = () => {
 
     if (!taskName) {
@@ -70,13 +81,13 @@ const AddTaskScreen = () => {
         <TextInput style={styles.input} value={taskName} onChangeText={setTaskName} placeholder="e.g. read textbook" />
 
         <Text style={styles.labelFont}>Daily Target:</Text>
-        <TextInput style={styles.input} value={dailyTarget} onChangeText={setDailyTarget} keyboardType="numeric" placeholder="e.g. 5" />
+        <TextInput style={styles.input} value={dailyTarget} onChangeText={handleDailyTargetChange} keyboardType="numeric" placeholder="e.g. 5"/>
 
         <Text style={styles.labelFont}>Total Amount:</Text>
-        <TextInput style={styles.input} value={totalAmount} onChangeText={setTotalAmount} keyboardType="numeric" placeholder="e.g. 100" />
+        <TextInput style={styles.input} value={totalAmount} onChangeText={handleTotalAmountChange} keyboardType="numeric" placeholder="e.g. 100"/>
 
         <Text style={styles.labelFont}>Unit of Amount:</Text>
-        <TextInput style={styles.input} value={unit} onChangeText={setUnit} placeholder="e.g. pages" />
+        <TextInput style={styles.input} value={unit} onChangeText={setUnit} placeholder="e.g. pages"/>
 
         <View style={styles.buttonRow}>
 

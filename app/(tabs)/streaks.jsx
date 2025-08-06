@@ -19,7 +19,7 @@ const StreaksScreen = () => {
 
     const words = item.unit.split(' ');
     words[words.length - 1] = pluralize(words[words.length - 1]);
-    currUnit = words.join(' ');
+    pluralUnit = words.join(' ');
     
     let backgroundColor;
     if (dailyRatio === 1) {
@@ -34,7 +34,7 @@ const StreaksScreen = () => {
       <View style={styles.cardContainer}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardHeaderFont}>
-            {item.totalCompleted} {currUnit} completed
+            {item.totalCompleted} {pluralUnit} completed
           </Text>
         </View>
 
@@ -63,7 +63,7 @@ const StreaksScreen = () => {
           <View style={styles.dottedLine} />
 
           <Text style={styles.dailyFont}>
-            {remainingToday} {item.unit} remaining today
+            {remainingToday} {pluralUnit} remaining today
           </Text>
 
           <View style={styles.dailyProgressRow}>

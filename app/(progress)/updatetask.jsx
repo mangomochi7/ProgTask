@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Alert, View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useTasks } from '../../context/TaskContext';
+import pluralize from 'pluralize';
 
 const {height, width} = Dimensions.get('window');
 
@@ -12,6 +13,16 @@ const UpdateTaskScreen = () => {
   const [unitsCompleted, setUnitsCompleted] = useState('');
 
   const task = tasks[parseInt(index)];
+
+  const words = task.unit.split(' ');
+  words[words.length - 1] = pluralize(words[words.length - 1]);
+  pluralUnit = words.join(' ');
+
+  const handleUnitsCompletedChange = (text) => {
+    if (/^\d*$/.test(text)) {
+      setUnitsCompleted(text);
+    }
+  };
 
   const handleUpdate = () => {
     const value = parseInt(unitsCompleted);
@@ -37,11 +48,11 @@ const UpdateTaskScreen = () => {
       </View>
       
       <View style={styles.containerArea}>
-        <Text style={styles.label}>{task.unit} completed:</Text>
+        <Text style={styles.label}>{pluralUnit} completed:</Text>
         <TextInput
           style={styles.input}
           value={unitsCompleted}
-          onChangeText={setUnitsCompleted}
+          onChangeText={handleUnitsCompletedChange}
           keyboardType="numeric"
           placeholder="e.g. 5"
         />

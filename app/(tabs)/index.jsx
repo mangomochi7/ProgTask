@@ -18,7 +18,7 @@ const TaskScreen = () => {
 
     const words = item.unit.split(' ');
     words[words.length - 1] = pluralize(words[words.length - 1]);
-    currUnit = words.join(' ');
+    pluralUnit = words.join(' ');
 
     let backgroundColor = '#EFF3F8';
     if (totalDone) {
@@ -87,7 +87,7 @@ const TaskScreen = () => {
           <View style={styles.dottedLine} />
 
           <Text style={styles.dailyFont}>
-            {item.dailyTarget - item.dailyProgress} {currUnit} remaining today
+            {item.dailyTarget - item.dailyProgress} {pluralUnit} remaining today
           </Text>
 
           <View style={styles.dailyProgressRow}>

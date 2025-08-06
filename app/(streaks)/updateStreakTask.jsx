@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Alert, View, Text, StyleSheet, TextInput, Dimensions, Pressable } from 'react-native';
 import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useStreaks } from '../../context/StreakContext';
+import pluralize from 'pluralize';
 
 const { height, width } = Dimensions.get('window');
 
@@ -12,6 +13,16 @@ const UpdateStreakTask = () => {
   const [unitsCompleted, setUnitsCompleted] = useState('');
 
   const task = streaks[parseInt(index)];
+
+  const handleUnitsCompletedChange = (text) => {
+    if (/^\d*$/.test(text)) {
+      setUnitsCompleted(text);
+    }
+  };
+
+  const words = task.unit.split(' ');
+  words[words.length - 1] = pluralize(words[words.length - 1]);
+  pluralUnit = words.join(' ');
 
   const handleUpdate = () => {
     const value = parseInt(unitsCompleted);
@@ -35,11 +46,11 @@ const UpdateStreakTask = () => {
         </View>
         
         <View style={styles.containerArea}>
-            <Text style={styles.label}>{task.unit} completed:</Text>
+            <Text style={styles.label}>{pluralUnit} completed:</Text>
             <TextInput
             style={styles.input}
             value={unitsCompleted}
-            onChangeText={setUnitsCompleted}
+            onChangeText={handleUnitsCompletedChange}
             keyboardType="numeric"
             placeholder="e.g. 5"
             />
